@@ -1,6 +1,36 @@
 const headElem = document.getElementById("head");
 const buttonsElem = document.getElementById("buttons");
 const pagesElem = document.getElementById("pages");
+
+// ===== Настройка сбора контактных данных =====
+// true  — перед тестом запрашиваются ФИО и телефон (обязательны для старта)
+// false — форма без контактных полей, тест начинается сразу
+const COLLECT_CONTACT_INFO = true;
+
+const contactFormElem = document.getElementById("contact_form");
+const fioInputElem = document.getElementById("fio_input");
+const phoneInputElem = document.getElementById("phone_input");
+const contactErrorElem = document.getElementById("contact_error");
+
+if (!COLLECT_CONTACT_INFO && contactFormElem) {
+  contactFormElem.className = "contact_form dnone";
+}
+
+function isContactDataValid() {
+  const fio = fioInputElem.value.trim();
+  const phoneDigits = phoneInputElem.value.replace(/\D/g, "");
+  // ФИО: минимум 2 слова; телефон: 10-15 цифр (с учётом кода страны)
+  const fioOk = fio.split(/\s+/).filter(Boolean).length >= 2;
+  const phoneOk = phoneDigits.length >= 10 && phoneDigits.length <= 15;
+  return fioOk && phoneOk;
+}
+
+function getContactData() {
+  return {
+    fio: fioInputElem.value.trim(),
+    phone: phoneInputElem.value.trim(),
+  };
+}
 class Stack {
   constructor() {
     this.stack = [];
@@ -760,7 +790,28 @@ function sendResultToSheet(data) {
   });
 }
 
+let collectedContactData = {};
+
 start.addEventListener("click", () => {
+  if (COLLECT_CONTACT_INFO) {
+    if (!isContactDataValid()) {
+      contactErrorElem.className = "contact_error";
+      fioInputElem.classList.toggle(
+        "input_invalid",
+        fioInputElem.value.trim().split(/\s+/).filter(Boolean).length < 2
+      );
+      phoneInputElem.classList.toggle(
+        "input_invalid",
+        phoneInputElem.value.replace(/\D/g, "").length < 10
+      );
+      return;
+    }
+    contactErrorElem.className = "contact_error dnone";
+    fioInputElem.classList.remove("input_invalid");
+    phoneInputElem.classList.remove("input_invalid");
+    collectedContactData = getContactData();
+  }
+
   start.disabled = true;
 
   Update();
@@ -809,10 +860,15 @@ function Update() {
       "</p>";
     qi[0].className = "quiz_inst";
 
-    sendResultToSheet({
-      result: quiz.results[quiz.result].head,
-      scores: quiz.bal,
-    });
+    sendResultToSheet(
+      Object.assign(
+        {
+          result: quiz.results[quiz.result].head,
+          scores: quiz.bal,
+        },
+        COLLECT_CONTACT_INFO ? collectedContactData : {}
+      )
+    );
   }
 }
 

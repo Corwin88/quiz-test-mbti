@@ -12,6 +12,18 @@
          <p>Внимательно читайте каждый вопрос и выбирайте подходящий ответ. Не думайте подолгу над вопросами, давайте первый ответ, который приходит Вам в голову.</p>
          <p>Опросник содержит два типа вопросов. В первом типе Вам необходимо выбрать, какой из вариантов ответа больше совпадает с тем, что Вы обычно чувствуете или делаете. Во втором типе Вам нужно определить, какое слово в паре Вам больше нравится. Ориентируйтесь на значение слова, а не на то, как оно выглядит.</p> 
 
+         <div class="contact_form" id="contact_form">
+             <div class="input_group">
+                 <label for="fio_input">ФИО</label>
+                 <input type="text" id="fio_input" placeholder="Иванов Иван Иванович" autocomplete="name">
+             </div>
+             <div class="input_group">
+                 <label for="phone_input">Телефон</label>
+                 <input type="tel" id="phone_input" placeholder="+7 900 000-00-00" autocomplete="tel">
+             </div>
+             <div class="contact_error dnone" id="contact_error">Пожалуйста, заполните ФИО и корректный номер телефона</div>
+         </div>
+
 		 <button class="button" id="start_test">Пройти тест</button><br>
      </div>
      <div class="quiz__head dnone">
